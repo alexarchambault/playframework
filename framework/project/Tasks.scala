@@ -7,7 +7,7 @@ object Generators {
   def PlayVersion(dir: File): Seq[File] = {
       val file = dir / "PlayVersion.scala"
       IO.write(file,
-        """|package play.core
+        """|package play22.core
             |
             |object PlayVersion {
             |    val current = "%s"

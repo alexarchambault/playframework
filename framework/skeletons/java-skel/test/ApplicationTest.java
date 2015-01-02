@@ -1,21 +1,15 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.*;
 
-import play.mvc.*;
-import play.test.*;
-import play.data.DynamicForm;
-import play.data.validation.ValidationError;
-import play.data.validation.Constraints.RequiredValidator;
-import play.i18n.Lang;
-import play.libs.F;
-import play.libs.F.*;
+import play22.mvc.*;
+import play22.test.*;
+import play22.data.DynamicForm;
+import play22.data.validation.ValidationError;
+import play22.data.validation.Constraints.RequiredValidator;
+import play22.i18n.Lang;
+import play22.libs.F;
+import play22.libs.F.*;
 
-import static play.test.Helpers.*;
+import static play22.test.Helpers.*;
 import static org.fest.assertions.Assertions.*;
 
 

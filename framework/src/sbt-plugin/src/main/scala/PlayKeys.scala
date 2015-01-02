@@ -1,111 +1,73 @@
-package play
+package play22
 
 import sbt._
 import sbt.Keys._
 
 trait Keys {
 
-  val jdbc = "com.typesafe.play" %% "play-jdbc" % play.core.PlayVersion.current
+  def component(id: String) = "com.typesafe.play" %% id % play22.core.PlayVersion.current
 
-  val anorm = "com.typesafe.play" %% "anorm" % play.core.PlayVersion.current
+  val playVersion = SettingKey[String]("play22-version")
 
-  val javaCore = "com.typesafe.play" %% "play-java" % play.core.PlayVersion.current
+  val playDefaultPort = SettingKey[Int]("play22-default-port")
 
-  val javaJdbc = "com.typesafe.play" %% "play-java-jdbc" % play.core.PlayVersion.current
+  val requireJs = SettingKey[Seq[String]]("play22-require-js")
 
-  val javaEbean = "com.typesafe.play" %% "play-java-ebean" % play.core.PlayVersion.current
+  val requireJsFolder = SettingKey[String]("play22-require-js-folder")
 
-  val javaJpa = "com.typesafe.play" %% "play-java-jpa" % play.core.PlayVersion.current
+  val requireJsShim = SettingKey[String]("play22-require-js-shim")
 
-  def component(id: String) = "com.typesafe.play" %% id % play.core.PlayVersion.current
-
-  val filters = "com.typesafe.play" %% "filters-helpers" % play.core.PlayVersion.current
-
-  val cache = "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current
-
-  val playVersion = SettingKey[String]("play-version")
-
-  val playDefaultPort = SettingKey[Int]("play-default-port")
-
-  val requireJs = SettingKey[Seq[String]]("play-require-js")
-
-  val requireJsFolder = SettingKey[String]("play-require-js-folder")
-
-  val requireJsShim = SettingKey[String]("play-require-js-shim")
-
-  val requireNativePath = SettingKey[Option[String]]("play-require-native-path")
+  val requireNativePath = SettingKey[Option[String]]("play22-require-native-path")
 
   /** Our means of hooking the run task with additional behavior. */
-  val playRunHooks = TaskKey[Seq[play.PlayRunHook]]("play-run-hooks")
+  val playRunHooks = TaskKey[Seq[play22.PlayRunHook]]("play22-run-hooks")
 
   @deprecated("2.2", "Please use playRunHooks setting instead.")
-  val playOnStarted = SettingKey[Seq[(java.net.InetSocketAddress) => Unit]]("play-onStarted")
+  val playOnStarted = SettingKey[Seq[(java.net.InetSocketAddress) => Unit]]("play22-onStarted")
 
   @deprecated("2.2", "Please use playRunHooks setting instead.")
-  val playOnStopped = SettingKey[Seq[() => Unit]]("play-onStopped")
+  val playOnStopped = SettingKey[Seq[() => Unit]]("play22-onStopped")
 
   /** A hook to configure how play blocks on user input while running. */
-  val playInteractionMode = SettingKey[play.PlayInteractionMode]("play-interaction-mode")
+  val playInteractionMode = SettingKey[play22.PlayInteractionMode]("play22-interaction-mode")
 
-  val playAssetsDirectories = SettingKey[Seq[File]]("play-assets-directories")
+  val playAssetsDirectories = SettingKey[Seq[File]]("play22-assets-directories")
 
-  val playExternalAssets = SettingKey[Seq[(File, File => PathFinder, String)]]("play-external-assets")
+  val playExternalAssets = SettingKey[Seq[(File, File => PathFinder, String)]]("play22-external-assets")
 
-  val confDirectory = SettingKey[File]("play-conf")
+  val confDirectory = SettingKey[File]("play22-conf")
 
-  val templatesImport = SettingKey[Seq[String]]("play-templates-imports")
+  val templatesImport = SettingKey[Seq[String]]("play22-templates-imports")
 
-  val routesImport = SettingKey[Seq[String]]("play-routes-imports")
+  val routesImport = SettingKey[Seq[String]]("play22-routes-imports")
 
-  val generateReverseRouter = SettingKey[Boolean]("play-generate-reverse-router",
+  val generateReverseRouter = SettingKey[Boolean]("play22-generate-reverse-router",
     "Whether the reverse router should be generated. Setting to false may reduce compile times if it's not needed.")
 
-  val namespaceReverseRouter = SettingKey[Boolean]("play-namespace-reverse-router",
+  val namespaceReverseRouter = SettingKey[Boolean]("play22-namespace-reverse-router",
     "Whether the reverse router should be namespaced. Useful if you have many routers that use the same actions.")
 
-  val ebeanEnabled = SettingKey[Boolean]("play-ebean-enabled")
+  val ebeanEnabled = SettingKey[Boolean]("play22-ebean-enabled")
 
-  val templatesTypes = SettingKey[Map[String, String]]("play-templates-formats")
+  val templatesTypes = SettingKey[Map[String, String]]("play22-templates-formats")
 
-  val closureCompilerOptions = SettingKey[Seq[String]]("play-closure-compiler-options")
+  val closureCompilerOptions = SettingKey[Seq[String]]("play22-closure-compiler-options")
 
-  val lessOptions = SettingKey[Seq[String]]("play-less-options")
+  val lessOptions = SettingKey[Seq[String]]("play22-less-options")
 
-  val coffeescriptOptions = SettingKey[Seq[String]]("play-coffeescript-options")
+  val coffeescriptOptions = SettingKey[Seq[String]]("play22-coffeescript-options")
 
-  val lessEntryPoints = SettingKey[PathFinder]("play-less-entry-points")
+  val lessEntryPoints = SettingKey[PathFinder]("play22-less-entry-points")
 
-  val coffeescriptEntryPoints = SettingKey[PathFinder]("play-coffeescript-entry-points")
+  val coffeescriptEntryPoints = SettingKey[PathFinder]("play22-coffeescript-entry-points")
 
-  val javascriptEntryPoints = SettingKey[PathFinder]("play-javascript-entry-points")
+  val javascriptEntryPoints = SettingKey[PathFinder]("play22-javascript-entry-points")
 
-  val playPlugin = SettingKey[Boolean]("play-plugin")
+  val playPlugin = SettingKey[Boolean]("play22-plugin")
 
-  val devSettings = SettingKey[Seq[(String, String)]]("play-dev-settings")
+  val devSettings = SettingKey[Seq[(String, String)]]("play22-dev-settings")
 
-  val scalaIdePlay2Prefs = TaskKey[Unit]("scala-ide-play2-prefs")
-
-  // Constants that may be useful elsewhere
-  val defaultJavaTemplatesImport = Seq(
-    "models._",
-    "controllers._",
-
-    "java.lang._",
-    "java.util._",
-
-    "scala.collection.JavaConversions._",
-    "scala.collection.JavaConverters._",
-
-    "play.api.i18n._",
-    "play.core.j.PlayMagicForJava._",
-
-    "play.mvc._",
-    "play.data._",
-    "play.api.data.Field",
-
-    "play.mvc.Http.Context.Implicit._",
-
-    "views.%format%._")
+  val scalaIdePlay2Prefs = TaskKey[Unit]("play22-scala-ide-play2-prefs")
 
   val defaultScalaTemplatesImport = Seq(
     "models._",
@@ -126,12 +88,12 @@ object Keys extends Keys
 trait PlayInternalKeys {
   type ClassLoaderCreator = (String, Array[URL], ClassLoader) => ClassLoader
 
-  val playDependencyClasspath = TaskKey[Classpath]("play-dependency-classpath")
-  val playReloaderClasspath = TaskKey[Classpath]("play-reloader-classpath")
-  val playCommonClassloader = TaskKey[ClassLoader]("play-common-classloader")
-  val playDependencyClassLoader = TaskKey[ClassLoaderCreator]("play-dependency-classloader")
-  val playReloaderClassLoader = TaskKey[ClassLoaderCreator]("play-reloader-classloader")
-  val playReload = TaskKey[sbt.inc.Analysis]("play-reload")
-  val buildRequire = TaskKey[Seq[(File, File)]]("play-build-require-assets")
-  val playCompileEverything = TaskKey[Seq[sbt.inc.Analysis]]("play-compile-everything")
+  val playDependencyClasspath = TaskKey[Classpath]("play22-dependency-classpath")
+  val playReloaderClasspath = TaskKey[Classpath]("play22-reloader-classpath")
+  val playCommonClassloader = TaskKey[ClassLoader]("play22-common-classloader")
+  val playDependencyClassLoader = TaskKey[ClassLoaderCreator]("play22-dependency-classloader")
+  val playReloaderClassLoader = TaskKey[ClassLoaderCreator]("play22-reloader-classloader")
+  val playReload = TaskKey[sbt.inc.Analysis]("play22-reload")
+  val buildRequire = TaskKey[Seq[(File, File)]]("play22-build-require-assets")
+  val playCompileEverything = TaskKey[Seq[sbt.inc.Analysis]]("play22-compile-everything")
 }

@@ -1,4 +1,4 @@
-package play
+package play22
 
 import sbt.{ Project => SbtProject, _ }
 import sbt.Keys._
@@ -9,18 +9,6 @@ import com.typesafe.sbt.packager.Keys._
 
 trait Settings {
   this: PlayCommands with PlayPositionMapper with PlayRun with PlaySourceGenerators =>
-
-  lazy val defaultJavaSettings = Seq[Setting[_]](
-
-    templatesImport ++= defaultJavaTemplatesImport,
-
-    routesImport ++= Seq(
-      "play.libs.F"
-    ),
-
-    ebeanEnabled := true
-
-  )
 
   lazy val defaultScalaSettings = Seq[Setting[_]](
     templatesImport ++= defaultScalaTemplatesImport
@@ -39,7 +27,7 @@ trait Settings {
 
   lazy val defaultSettings = Seq[Setting[_]](
 
-    scalaVersion := play.core.PlayVersion.scalaVersion,
+    scalaVersion := play22.core.PlayVersion.scalaVersion,
 
     playPlugin := false,
 
@@ -65,16 +53,16 @@ trait Settings {
     javacOptions in (Compile, doc) := List("-encoding", "utf8"),
 
     libraryDependencies <+= (playPlugin) { isPlugin =>
-      val d = "com.typesafe.play" %% "play" % play.core.PlayVersion.current
+      val d = "com.typesafe.play" %% "play" % play22.core.PlayVersion.current
       if (isPlugin)
         d % "provided"
       else
         d
     },
-    libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "test",
+    libraryDependencies += "com.typesafe.play" %% "play-test" % play22.core.PlayVersion.current % "test",
 
     ivyConfigurations += DocsApplication,
-    libraryDependencies += "com.typesafe.play" %% "play-docs" % play.core.PlayVersion.current % DocsApplication.name,
+    libraryDependencies += "com.typesafe.play" %% "play-docs" % play22.core.PlayVersion.current % DocsApplication.name,
     manageClasspath(DocsApplication),
 
     parallelExecution in Test := false,
@@ -130,7 +118,7 @@ trait Settings {
 
     computeDependencies <<= computeDependenciesTask,
 
-    playVersion := play.core.PlayVersion.current,
+    playVersion := play22.core.PlayVersion.current,
 
     // all dependencies from outside the project (all dependency jars)
     playDependencyClasspath <<= externalDependencyClasspath in Runtime,
@@ -169,14 +157,14 @@ trait Settings {
     playRunHooks := Nil,
 
     playRunHooks <++= playOnStarted map { funcs =>
-      funcs map play.PlayRunHook.makeRunHookFromOnStarted
+      funcs map play22.PlayRunHook.makeRunHookFromOnStarted
     },
 
     playRunHooks <++= playOnStopped map { funcs =>
-      funcs map play.PlayRunHook.makeRunHookFromOnStopped
+      funcs map play22.PlayRunHook.makeRunHookFromOnStopped
     },
 
-    playInteractionMode := play.PlayConsoleInteractionMode,
+    playInteractionMode := play22.PlayConsoleInteractionMode,
 
     // Assets
 

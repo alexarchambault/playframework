@@ -1,10 +1,10 @@
-package play
+package play22
 
 import sbt._
 import sbt.testing.{ Event => TEvent, Status => TStatus }
 import test.SbtOptionalThrowable
 
-private[play] class PlayTestListener extends TestsListener {
+private[play22] class PlayTestListener extends TestsListener {
 
   private var skipped, errors, passed, failures = 0
 

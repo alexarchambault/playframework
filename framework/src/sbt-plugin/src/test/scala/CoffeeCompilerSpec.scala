@@ -1,8 +1,8 @@
-package play.core.coffeescript
+package play22.core.coffeescript
 
 import java.io._
 import org.specs2.mutable._
-import play.PlayExceptions.AssetCompilationException
+import play22.PlayExceptions.AssetCompilationException
 
 object AssetsSpec extends Specification {
 

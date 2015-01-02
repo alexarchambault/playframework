@@ -8,4 +8,4 @@ libraryDependencies ++= Seq(
   cache
 )     
 
-play.Project.playJavaSettings
+play22.Project.playJavaSettings

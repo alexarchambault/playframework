@@ -8,4 +8,4 @@ libraryDependencies ++= Seq(
   cache
 )     
 
-play.Project.playScalaSettings
+play22.Project.playScalaSettings

@@ -1,6 +1,6 @@
 // TODO Get rid of this file which just demonstrates how harmful copy-pasting is.
 
-package play.api.templates {
+package play22.api.templates {
 
   trait Template0[Result] { def render(): Result }
   trait Template1[A, Result] { def render(a: A): Result }
@@ -28,7 +28,7 @@ package play.api.templates {
 
 }
 
-package play.templates {
+package play22.templates {
 
   trait Appendable[T] {
     def +(other: T): T

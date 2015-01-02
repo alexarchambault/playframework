@@ -1,7 +1,6 @@
 package controllers;
 
-import play.*;
-import play.mvc.*;
+import play22.mvc.*;
 
 import views.html.*;
 

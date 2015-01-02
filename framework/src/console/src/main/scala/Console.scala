@@ -1,5 +1,5 @@
 
-package play.console
+package play22.console
 
 import java.io._
 import scalax.file._
@@ -21,8 +21,8 @@ object Console {
            ||_|            |__/
            |
            |""".stripMargin) +
-    ("play " + play.core.PlayVersion.current +
-      " built with Scala " + play.core.PlayVersion.scalaVersion +
+    ("play " + play22.core.PlayVersion.current +
+      " built with Scala " + play22.core.PlayVersion.scalaVersion +
       " (running Java " + System.getProperty("java.version") + ")," +
       " http://www.playframework.com")
 
@@ -57,9 +57,9 @@ object Console {
     replace(new File(path, "build.sbt"),
       "APPLICATION_NAME" -> name)
     replace(new File(path, "project/plugins.sbt"),
-      "PLAY_VERSION" -> play.core.PlayVersion.current)
+      "PLAY_VERSION" -> play22.core.PlayVersion.current)
     replace(new File(path, "project/build.properties"),
-      "SBT_VERSION" -> play.core.PlayVersion.sbtVersion)
+      "SBT_VERSION" -> play22.core.PlayVersion.sbtVersion)
     replace(new File(path, "conf/application.conf"),
       "APPLICATION_SECRET" -> newSecret)
   }
@@ -146,7 +146,7 @@ object Console {
 
   def helpCommand(args: Array[String]): (String, Int) = {
     (
-      "Welcome to Play " + play.core.PlayVersion.current + """!
+      "Welcome to Play " + play22.core.PlayVersion.current + """!
             |
             |These commands are available:
             |-----------------------------

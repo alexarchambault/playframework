@@ -1,8 +1,8 @@
-package play.core.less
+package play22.core.less
 
 import org.specs2.mutable.Specification
 import java.io.File
-import play.PlayExceptions.AssetCompilationException
+import play22.PlayExceptions.AssetCompilationException
 
 object LessCompilerSpec extends Specification {
 

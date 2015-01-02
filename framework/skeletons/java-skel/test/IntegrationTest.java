@@ -1,10 +1,10 @@
 import org.junit.*;
 
-import play.mvc.*;
-import play.test.*;
-import play.libs.F.*;
+import play22.mvc.*;
+import play22.test.*;
+import play22.libs.F.*;
 
-import static play.test.Helpers.*;
+import static play22.test.Helpers.*;
 import static org.fest.assertions.Assertions.*;
 
 import static org.fluentlenium.core.filter.FilterConstructor.*;

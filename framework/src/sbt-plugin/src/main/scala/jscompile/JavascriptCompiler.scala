@@ -1,8 +1,8 @@
-package play.core.jscompile
+package play22.core.jscompile
 
-import play.PlayExceptions.AssetCompilationException
+import play22.PlayExceptions.AssetCompilationException
 import java.io._
-import play.api._
+import play22.api._
 import scala.collection.JavaConverters._
 import scalax.file._
 import com.google.javascript.rhino.Node

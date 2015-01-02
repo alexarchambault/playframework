@@ -1,4 +1,4 @@
-package play
+package play22
 
 import sbt._
 import xsbti.Position
@@ -9,7 +9,7 @@ import xsbti.Position
 trait PlayPositionMapper {
   val templatePositionMapper: Position => Option[Position] = position => {
     position.sourceFile collect {
-      case play.templates.MaybeGeneratedSource(generatedSource) => {
+      case play22.templates.MaybeGeneratedSource(generatedSource) => {
         new xsbti.Position {
           lazy val line = {
             position.line.map(l => generatedSource.mapLine(l.asInstanceOf[Int])).map(l => xsbti.Maybe.just(l.asInstanceOf[java.lang.Integer])).getOrElse(xsbti.Maybe.nothing[java.lang.Integer])
@@ -43,7 +43,7 @@ trait PlayPositionMapper {
 
   val routesPositionMapper: Position => Option[Position] = position => {
     position.sourceFile collect {
-      case play.router.RoutesCompiler.MaybeGeneratedSource(generatedSource) => {
+      case play22.router.RoutesCompiler.MaybeGeneratedSource(generatedSource) => {
         new xsbti.Position {
           lazy val line = {
             position.line.flatMap(l => generatedSource.mapLine(l.asInstanceOf[Int])).map(l => xsbti.Maybe.just(l.asInstanceOf[java.lang.Integer])).getOrElse(xsbti.Maybe.nothing[java.lang.Integer])

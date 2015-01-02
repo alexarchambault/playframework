@@ -159,10 +159,6 @@ object Dependencies {
     specsSbt
   )
 
-  val playDocsDependencies = Seq(
-    "com.typesafe.play" %% "play-doc" % "1.0.3"
-  )
-
   val consoleDependencies = Seq(
     scalaIoFile,
     "org.scala-sbt" % "launcher-interface" % BuildSettings.buildSbtVersion,

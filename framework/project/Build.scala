@@ -1,8 +1,7 @@
 import sbt._
 import Keys._
 import com.typesafe.tools.mima.plugin.MimaPlugin.mimaDefaultSettings
-import com.typesafe.tools.mima.plugin.MimaKeys.{previousArtifact, binaryIssueFilters}
-import com.typesafe.tools.mima.core._
+import com.typesafe.tools.mima.plugin.MimaKeys.previousArtifact
 import com.typesafe.sbt.SbtScalariform.defaultScalariformSettings
 
 object BuildSettings {
@@ -21,8 +20,8 @@ object BuildSettings {
 
   val experimental = Option(System.getProperty("experimental")).filter(_ == "true")
 
-  val buildOrganization = "com.typesafe.play"
-  val buildVersion = propOr("play.version", "2.2-SNAPSHOT")
+  val buildOrganization = "com.github.alexarchambault.play22sbt"
+  val buildVersion = propOr("play.version", "2.2.6")
   val buildWithDoc = boolProp("generate.doc")
   val previousVersion = "2.2.0"
   val buildScalaVersion = propOr("scala.version", "2.10.3")
@@ -141,9 +140,6 @@ object PlayBuild extends Build {
   lazy val SbtLinkProject = PlaySharedJavaProject("SBT-link", "sbt-link")
     .settings(libraryDependencies := link)
 
-  lazy val TemplatesProject = PlayRuntimeProject("Templates", "templates")
-    .settings(libraryDependencies := templatesDependencies)
-
   lazy val RoutesCompilerProject = PlaySbtProject("Routes-Compiler", "routes-compiler")
     .settings(libraryDependencies := routersCompilerDependencies)
 
@@ -155,102 +151,9 @@ object PlayBuild extends Build {
       }
     )
 
-  lazy val AnormProject = PlayRuntimeProject("Anorm", "anorm")
-
-  lazy val IterateesProject = PlayRuntimeProject("Play-Iteratees", "iteratees")
-    .settings(libraryDependencies := iterateesDependencies)
-
-  lazy val FunctionalProject = PlayRuntimeProject("Play-Functional", "play-functional")
-
-  lazy val DataCommonsProject = PlayRuntimeProject("Play-DataCommons", "play-datacommons")
-
-  lazy val JsonProject = PlayRuntimeProject("Play-Json", "play-json")
-    .settings(libraryDependencies := jsonDependencies)
-    .dependsOn(IterateesProject, FunctionalProject, DataCommonsProject)
-
   lazy val PlayExceptionsProject = PlaySharedJavaProject("Play-Exceptions", "play-exceptions",
     testBinaryCompatibility = true)
 
-  lazy val PlayProject = PlayRuntimeProject("Play", "play")
-    .settings(
-      libraryDependencies := runtime,
-      sourceGenerators in Compile <+= sourceManaged in Compile map PlayVersion,
-      mappings in(Compile, packageSrc) <++= scalaTemplateSourceMappings,
-      Docs.apiDocsIncludeManaged := true,
-      parallelExecution in Test := false,
-      sourceGenerators in Compile <+= (dependencyClasspath in TemplatesCompilerProject in Runtime, packageBin in TemplatesCompilerProject in Compile, scalaSource in Compile, sourceManaged in Compile, streams) map ScalaTemplates,
-      binaryIssueFilters ++= Seq(
-        // Internal refactoring to WebSocket support
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.websocket.WebSocketHandshake.shake"),
-        ProblemFilters.exclude[MissingClassProblem]("play.core.server.netty.NettyPromise$"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.websocketHandshake"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.newWebSocketInHandler"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.websocketHandshake"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.newWebSocketInHandler"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.WebSocketNormalClose"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.WebSocketMessageTooLong"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.play$core$server$netty$WebSocketHandler$_setter_$WebSocketUnacceptable_="),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.play$core$server$netty$WebSocketHandler$_setter_$play$core$server$netty$WebSocketHandler$$MaxInFlight_="),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.play$core$server$netty$WebSocketHandler$$MaxInFlight"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.play$core$server$netty$WebSocketHandler$_setter_$WebSocketNormalClose_="),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.WebSocketUnacceptable"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.WebSocketHandler.play$core$server$netty$WebSocketHandler$_setter_$WebSocketMessageTooLong_="),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.PlayDefaultUpstreamHandler.newWebSocketInHandler"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.PlayDefaultUpstreamHandler.websocketHandshake"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.core.server.netty.PlayDefaultUpstreamHandler.play$core$server$netty$PlayDefaultUpstreamHandler$$step$1"),
-        ProblemFilters.exclude[MissingClassProblem]("play.core.server.netty.NettyPromise")
-      )
-    ).dependsOn(SbtLinkProject, PlayExceptionsProject, TemplatesProject, IterateesProject % "test->test;compile->compile", JsonProject)
-
-  lazy val PlayJdbcProject = PlayRuntimeProject("Play-JDBC", "play-jdbc")
-    .settings(libraryDependencies := jdbcDeps)
-    .dependsOn(PlayProject)
-
-  lazy val PlayJavaJdbcProject = PlayRuntimeProject("Play-Java-JDBC", "play-java-jdbc")
-    .dependsOn(PlayJdbcProject, PlayJavaProject)
-
-  lazy val PlayEbeanProject = PlayRuntimeProject("Play-Java-Ebean", "play-java-ebean")
-    .settings(
-      libraryDependencies := ebeanDeps ++ jpaDeps,
-      compile in (Compile) <<= (dependencyClasspath in Compile, compile in Compile, classDirectory in Compile) map {
-        (deps, analysis, classes) =>
-
-        // Ebean (really hacky sorry)
-          val cp = deps.map(_.data.toURL).toArray :+ classes.toURL
-          val cl = new java.net.URLClassLoader(cp)
-
-          val t = cl.loadClass("com.avaje.ebean.enhance.agent.Transformer").getConstructor(classOf[Array[URL]], classOf[String]).newInstance(cp, "debug=0").asInstanceOf[AnyRef]
-          val ft = cl.loadClass("com.avaje.ebean.enhance.ant.OfflineFileTransform").getConstructor(
-            t.getClass, classOf[ClassLoader], classOf[String], classOf[String]
-          ).newInstance(t, ClassLoader.getSystemClassLoader, classes.getAbsolutePath, classes.getAbsolutePath).asInstanceOf[AnyRef]
-
-          ft.getClass.getDeclaredMethod("process", classOf[String]).invoke(ft, "play/db/ebean/**")
-
-          analysis
-      }
-    ).dependsOn(PlayJavaJdbcProject)
-
-  lazy val PlayJpaProject = PlayRuntimeProject("Play-Java-JPA", "play-java-jpa")
-    .settings(libraryDependencies := jpaDeps)
-    .dependsOn(PlayJavaJdbcProject)
-
-  lazy val PlayTestProject = PlayRuntimeProject("Play-Test", "play-test")
-    .settings(
-      libraryDependencies := testDependencies,
-      parallelExecution in Test := false
-    ).dependsOn(PlayProject)
-
-  lazy val PlayJavaProject = PlayRuntimeProject("Play-Java", "play-java")
-    .settings(libraryDependencies := javaDeps)
-    .dependsOn(PlayProject)
-    .dependsOn(PlayTestProject % "test")
-
-  lazy val PlayDocsProject = PlayRuntimeProject("Play-Docs", "play-docs")
-    .settings(Docs.settings: _*)
-    .settings(
-      libraryDependencies := playDocsDependencies
-    ).dependsOn(PlayProject)
-  
   import ScriptedPlugin._
 
   lazy val SbtPluginProject = PlaySbtProject("SBT-Plugin", "sbt-plugin")
@@ -293,58 +196,6 @@ object PlayBuild extends Build {
       sourceGenerators in Compile <+= sourceManaged in Compile map PlayVersion
     )
 
-  lazy val PlayFiltersHelpersProject = PlayRuntimeProject("Filters-Helpers", "play-filters-helpers")
-    .settings(
-      binaryIssueFilters ++= Seq(
-        // When we upgrade to mima with SBT 0.13 we can filter by package...
-        // Basically we had to change CSRFFilter to use by name parameters, which meant it could no
-        // longer be a case class, which is why there's so much breakage here.
-        ProblemFilters.exclude[MissingTypesProblem]("play.filters.csrf.CSRFFilter"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.copy$default$3"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.copy"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.copy$default$1"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.copy$default$2"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.toString"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.productPrefix"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.createIfNotFound"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.productArity"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.this"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.canEqual"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.equals"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.tokenName"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.productElement"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.cookieName"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.hashCode"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.copy$default$4"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.secureCookie"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.productIterator"),
-        ProblemFilters.exclude[MissingTypesProblem]("play.filters.csrf.CSRFFilter$"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.apply"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.apply"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.unapply"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFFilter.toString"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFAction.this"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFAddToken#CSRFAddTokenAction.this"),
-        ProblemFilters.exclude[MissingMethodProblem]("play.filters.csrf.CSRFCheck#CSRFCheckAction.this")
-      ),
-      parallelExecution in Test := false
-    ).dependsOn(PlayProject, PlayTestProject % "test", PlayJavaProject % "test")
-
-  // This project is just for testing Play, not really a public artifact
-  lazy val PlayIntegrationTestProject = PlayRuntimeProject("Play-Integration-Test", "play-integration-test")
-    .settings(
-      parallelExecution in Test := false,
-      previousArtifact := None
-    )
-    .dependsOn(PlayProject, PlayTestProject)
-
-  lazy val PlayCacheProject = PlayRuntimeProject("Play-Cache", "play-cache")
-    .settings(
-      libraryDependencies := playCacheDeps,
-      parallelExecution in Test := false
-    ).dependsOn(PlayProject)
-    .dependsOn(PlayTestProject % "test")
-
   import RepositoryBuilder._
   lazy val RepositoryProject = Project(
       "Play-Repository", file("repository"))
@@ -364,29 +215,12 @@ object PlayBuild extends Build {
     )
 
   lazy val publishedProjects = Seq[ProjectReference](
-    PlayProject,
-    SbtLinkProject,
-    AnormProject,
-    TemplatesProject,
-    TemplatesCompilerProject,
-    IterateesProject,
-    FunctionalProject,
-    DataCommonsProject,
-    JsonProject,
-    RoutesCompilerProject,
-    PlayCacheProject,
-    PlayJdbcProject,
-    PlayJavaProject,
-    PlayJavaJdbcProject,
-    PlayEbeanProject,
-    PlayJpaProject,
-    SbtPluginProject,
-    ConsoleProject,
-    PlayTestProject,
-    PlayExceptionsProject,
-    PlayDocsProject,
-    PlayFiltersHelpersProject,
-    PlayIntegrationTestProject
+    SbtLinkProject, // *
+    TemplatesCompilerProject, // *
+    RoutesCompilerProject, // *
+    SbtPluginProject, // *
+    ConsoleProject, // *
+    PlayExceptionsProject // *
   )
     
   lazy val Root = Project(
@@ -401,5 +235,4 @@ object PlayBuild extends Build {
       generateDistTask
     )
     .aggregate(publishedProjects: _*)
-    .aggregate(RepositoryProject)
 }

@@ -1,8 +1,8 @@
-package play.core.less
+package play22.core.less
 
-import play.PlayExceptions.AssetCompilationException
+import play22.PlayExceptions.AssetCompilationException
 import java.io._
-import play.api._
+import play22.api._
 
 object LessCompiler {
 

@@ -1,7 +1,7 @@
-package play
+package play22
 
-import play.api._
-import play.core._
+import play22.api._
+import play22.core._
 import sbt.{ Project => SbtProject, _ }
 import sbt.Keys._
 import PlayExceptions._
@@ -99,7 +99,7 @@ trait PlayReloader {
         } catch {
           case e: Throwable => {
 
-            println(play.console.Colors.red(
+            println(play22.console.Colors.red(
               """|
                  |Cannot load the JNotify native library (%s)
                  |Play will check file changes for each request, so expect degraded reloading performace.
@@ -191,7 +191,7 @@ trait PlayReloader {
             }
           }.headOption.map {
             case (source, maybeLine) => {
-              play.templates.MaybeGeneratedSource.unapply(source).map { generatedSource =>
+              play22.templates.MaybeGeneratedSource.unapply(source).map { generatedSource =>
                 generatedSource.source.get -> Option(maybeLine).map(l => generatedSource.mapLine(l): java.lang.Integer).orNull
               }.getOrElse(source -> maybeLine)
             }
@@ -288,7 +288,7 @@ trait PlayReloader {
 
       def reload: AnyRef = {
 
-        play.Project.synchronized {
+        play22.Project.synchronized {
 
           if (jnotify.hasChanged || hasChangedFiles) {
             jnotify.reloaded()

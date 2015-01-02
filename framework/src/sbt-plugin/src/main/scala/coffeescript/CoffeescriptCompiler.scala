@@ -1,7 +1,7 @@
-package play.core.coffeescript
+package play22.core.coffeescript
 
 import java.io._
-import play.PlayExceptions.AssetCompilationException
+import play22.PlayExceptions.AssetCompilationException
 
 object CoffeescriptCompiler {
 
@@ -74,7 +74,7 @@ object CoffeescriptCompiler {
   def compile(source: File, options: Seq[String]): String = {
     try {
       if (options.size == 2 && options.headOption.filter(_ == "native").isDefined)
-        play.core.jscompile.JavascriptCompiler.executeNativeCompiler(options.last + " " + source.getAbsolutePath, source)
+        play22.core.jscompile.JavascriptCompiler.executeNativeCompiler(options.last + " " + source.getAbsolutePath, source)
       else
         compiler(source, options.contains("bare"))
     } catch {

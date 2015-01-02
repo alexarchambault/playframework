@@ -1,7 +1,7 @@
-package play.templates.test
+package play22.templates.test
 
 import org.specs2.mutable._
-import play.templates._
+import play22.templates._
 
 import java.io._
 

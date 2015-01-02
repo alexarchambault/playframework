@@ -1,10 +1,10 @@
-package play
+package play22
 
 import sbt.{ Project => SbtProject, _ }
 import sbt.Keys._
 import Keys._
-import play.core.{ SBTLink, SBTDocHandler }
-import play.console.Colors
+import play22.core.{ SBTLink, SBTDocHandler }
+import play22.console.Colors
 import annotation.tailrec
 import scala.collection.JavaConverters._
 import java.net.URLClassLoader
@@ -82,7 +82,7 @@ trait PlayRun extends PlayInternalKeys {
   val playRunSetting: SbtProject.Initialize[InputTask[Unit]] = playRunTask(playRunHooks, playDependencyClasspath, playDependencyClassLoader, playReloaderClasspath, playReloaderClassLoader)
 
   def playRunTask(
-    runHooks: TaskKey[Seq[play.PlayRunHook]],
+    runHooks: TaskKey[Seq[play22.PlayRunHook]],
     dependencyClasspath: TaskKey[Classpath], dependencyClassLoader: TaskKey[ClassLoaderCreator],
     reloaderClasspath: TaskKey[Classpath], reloaderClassLoader: TaskKey[ClassLoaderCreator]): SbtProject.Initialize[InputTask[Unit]] = inputTask { (argsTask: TaskKey[Seq[String]]) =>
     (
@@ -160,15 +160,15 @@ trait PlayRun extends PlayInternalKeys {
         lazy val delegatingLoader: ClassLoader = new ClassLoader(commonLoader) {
 
           private val sbtSharedClasses = Seq(
-            classOf[play.core.SBTLink].getName,
-            classOf[play.core.SBTDocHandler].getName,
-            classOf[play.core.server.ServerWithStop].getName,
-            classOf[play.api.UsefulException].getName,
-            classOf[play.api.PlayException].getName,
-            classOf[play.api.PlayException.InterestingLines].getName,
-            classOf[play.api.PlayException.RichDescription].getName,
-            classOf[play.api.PlayException.ExceptionSource].getName,
-            classOf[play.api.PlayException.ExceptionAttachment].getName)
+            classOf[play22.core.SBTLink].getName,
+            classOf[play22.core.SBTDocHandler].getName,
+            classOf[play22.core.server.ServerWithStop].getName,
+            classOf[play22.api.UsefulException].getName,
+            classOf[play22.api.PlayException].getName,
+            classOf[play22.api.PlayException.InterestingLines].getName,
+            classOf[play22.api.PlayException.RichDescription].getName,
+            classOf[play22.api.PlayException.ExceptionSource].getName,
+            classOf[play22.api.PlayException.ExceptionAttachment].getName)
 
           override def loadClass(name: String, resolve: Boolean): Class[_] = {
             if (sbtSharedClasses.contains(name)) {
@@ -230,10 +230,10 @@ trait PlayRun extends PlayInternalKeys {
           val mainClass = applicationLoader.loadClass("play.core.server.NettyServer")
           if (httpPort.isDefined) {
             val mainDev = mainClass.getMethod("mainDevHttpMode", classOf[SBTLink], classOf[SBTDocHandler], classOf[Int])
-            mainDev.invoke(null, reloader, sbtDocHandler, httpPort.get: java.lang.Integer).asInstanceOf[play.core.server.ServerWithStop]
+            mainDev.invoke(null, reloader, sbtDocHandler, httpPort.get: java.lang.Integer).asInstanceOf[play22.core.server.ServerWithStop]
           } else {
             val mainDev = mainClass.getMethod("mainDevOnlyHttpsMode", classOf[SBTLink], classOf[SBTDocHandler], classOf[Int])
-            mainDev.invoke(null, reloader, sbtDocHandler, httpsPort.get: java.lang.Integer).asInstanceOf[play.core.server.ServerWithStop]
+            mainDev.invoke(null, reloader, sbtDocHandler, httpsPort.get: java.lang.Integer).asInstanceOf[play22.core.server.ServerWithStop]
           }
         }
 

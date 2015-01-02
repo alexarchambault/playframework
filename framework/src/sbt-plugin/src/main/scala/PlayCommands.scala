@@ -1,9 +1,9 @@
-package play
+package play22
 
 import sbt.{ Project => SbtProject, Settings => SbtSettings, _ }
 import sbt.Keys._
 
-import play.console.Colors
+import play22.console.Colors
 
 import Keys._
 import java.lang.{ ProcessBuilder => JProcessBuilder }
@@ -22,7 +22,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
   val SCALA = "scala"
   val NONE = "none"
 
-  val playCopyAssets = TaskKey[Seq[(File, File)]]("play-copy-assets")
+  val playCopyAssets = TaskKey[Seq[(File, File)]]("play22-copy-assets")
   val playCopyAssetsTask = (baseDirectory, managedResources in Compile, resourceManaged in Compile, playAssetsDirectories, playExternalAssets, classDirectory in Compile, cacheDirectory, streams, state) map { (b, resources, resourcesDirectories, r, externals, t, c, s, state) =>
     val cacheFile = c / "copy-assets"
 
@@ -49,11 +49,11 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
   //- test reporter
   protected lazy val testListener = new PlayTestListener
 
-  val testResultReporter = TaskKey[List[String]]("test-result-reporter")
+  val testResultReporter = TaskKey[List[String]]("play22-test-result-reporter")
   val testResultReporterTask = (state, thisProjectRef) map { (s, r) =>
     testListener.result.toList
   }
-  val testResultReporterReset = TaskKey[Unit]("test-result-reporter-reset")
+  val testResultReporterReset = TaskKey[Unit]("play22-test-result-reporter-reset")
   val testResultReporterResetTask = (state, thisProjectRef) map { (s, r) =>
     testListener.result.clear
   }
@@ -112,7 +112,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
         Nil
     }
 
-    import play.core.enhancers.PropertiesEnhancer
+    import play22.core.enhancers.PropertiesEnhancer
 
     val javaClassesWithGeneratedAccessors = javaClasses.filter(PropertiesEnhancer.generateAccessors(classpath, _))
     val javaClassesWithAccessorsRewritten = javaClasses.filter(PropertiesEnhancer.rewriteAccess(classpath, _))
@@ -123,7 +123,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
 
     IO.write(timestampFile, System.currentTimeMillis.toString)
 
-    val ebeanEnhancement = classpath.contains("play-java-ebean")
+    val ebeanEnhancement = classpath.contains("play22-java-ebean")
 
     // EBean
     if (ebeanEnhancement) {
@@ -320,9 +320,9 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
       s.log.info(content)
       try {
         requireNativePath.map(nativePath =>
-          println(play.core.jscompile.JavascriptCompiler.executeNativeCompiler(nativePath + " -o " + buildDesc.getAbsolutePath, buildDesc))
+          println(play22.core.jscompile.JavascriptCompiler.executeNativeCompiler(nativePath + " -o " + buildDesc.getAbsolutePath, buildDesc))
         ).getOrElse {
-          play.core.jscompile.JavascriptCompiler.require(buildDesc)
+          play22.core.jscompile.JavascriptCompiler.require(buildDesc)
         }
         s.log.info("RequireJS optimization finished.")
       } catch {
@@ -336,7 +336,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
     cr
   }
 
-  val playCommand = Command.command("play", Help("play", ("play", "Enter the play console"), "Welcome to Play " + play.core.PlayVersion.current + """!
+  val playCommand = Command.command("play", Help("play", ("play", "Enter the play console"), "Welcome to Play " + play22.core.PlayVersion.current + """!
         |
         |These commands are available:
         |-----------------------------
@@ -369,7 +369,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
     import extracted._
 
     // Display logo
-    println(play.console.Console.logo)
+    println(play22.console.Console.logo)
     println("""
             |> Type "help play" or "license" for more information.
             |> Type "exit" or use Ctrl+D to leave this console.
@@ -380,7 +380,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
 
   }
 
-  val h2Command = Command.command("h2-browser") { state: State =>
+  val h2Command = Command.command("play22-h2-browser") { state: State =>
     try {
       val commonLoader = SbtProject.runTask(playCommonClassloader, state).get._2.toEither.right.get
       val h2ServerClass = commonLoader.loadClass(classOf[org.h2.tools.Server].getName)
@@ -391,7 +391,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
     state
   }
 
-  val licenseCommand = Command.command("license") { state: State =>
+  val licenseCommand = Command.command("play22-license") { state: State =>
     println(
       """
       |This software is licensed under the Apache 2 license, quoted below.
@@ -413,7 +413,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
     state
   }
 
-  val classpathCommand = Command.command("classpath") { state: State =>
+  val classpathCommand = Command.command("play22-classpath") { state: State =>
 
     val extracted = SbtProject.extract(state)
 
@@ -438,7 +438,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
 
   }
 
-  val playMonitoredFiles = TaskKey[Seq[String]]("play-monitored-files")
+  val playMonitoredFiles = TaskKey[Seq[String]]("play22-monitored-files")
   val playMonitoredFilesTask = (thisProjectRef, state) map { (ref, state) =>
     val src = inAllDependencies(ref, sourceDirectories in Compile, SbtProject structure state).foldLeft(Seq.empty[File])(_ ++ _)
     val resources = inAllDependencies(ref, resourceDirectories in Compile, SbtProject structure state).foldLeft(Seq.empty[File])(_ ++ _)
@@ -448,7 +448,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
     }.map(_.getCanonicalPath).distinct
   }
 
-  val computeDependencies = TaskKey[Seq[Map[Symbol, Any]]]("ivy-dependencies")
+  val computeDependencies = TaskKey[Seq[Map[Symbol, Any]]]("play22-ivy-dependencies")
   val computeDependenciesTask = (deliverLocal, ivySbt, streams, organizationName, moduleName, version, scalaBinaryVersion) map { (_, ivySbt, s, org, id, version, scalaVersion) =>
 
     import scala.xml._
@@ -479,7 +479,7 @@ trait PlayCommands extends PlayAssetsCompiler with PlayEclipse with PlayInternal
 
   }
 
-  val computeDependenciesCommand = Command.command("dependencies") { state: State =>
+  val computeDependenciesCommand = Command.command("play22-dependencies") { state: State =>
 
     val extracted = SbtProject.extract(state)
 

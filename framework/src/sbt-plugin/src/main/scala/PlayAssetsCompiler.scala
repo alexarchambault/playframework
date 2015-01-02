@@ -1,4 +1,4 @@
-package play
+package play22
 
 import sbt._
 import sbt.Keys._
@@ -85,7 +85,7 @@ trait PlayAssetsCompiler {
     (_ ** "*.less"),
     lessEntryPoints,
     { (name, min) => name.replace(".less", if (min) ".min.css" else ".css") },
-    { (lessFile, options) => play.core.less.LessCompiler.compile(lessFile) },
+    { (lessFile, options) => play22.core.less.LessCompiler.compile(lessFile) },
     lessOptions
   )
 
@@ -93,7 +93,7 @@ trait PlayAssetsCompiler {
     (_ ** "*.js"),
     javascriptEntryPoints,
     { (name, min) => name.replace(".js", if (min) ".min.js" else ".js") },
-    { (jsFile: File, simpleCompilerOptions) => play.core.jscompile.JavascriptCompiler.compile(jsFile, simpleCompilerOptions, fullCompilerOptions) },
+    { (jsFile: File, simpleCompilerOptions) => play22.core.jscompile.JavascriptCompiler.compile(jsFile, simpleCompilerOptions, fullCompilerOptions) },
     closureCompilerOptions
   )
 
@@ -103,10 +103,10 @@ trait PlayAssetsCompiler {
     { (name, min) => name.replace(".coffee", if (min) ".min.js" else ".js") },
     { (coffeeFile, options) =>
       import scala.util.control.Exception._
-      val jsSource = play.core.coffeescript.CoffeescriptCompiler.compile(coffeeFile, options)
+      val jsSource = play22.core.coffeescript.CoffeescriptCompiler.compile(coffeeFile, options)
       // Any error here would be because of CoffeeScript, not the developer;
       // so we don't want compilation to fail.
-      val minified = catching(classOf[CompilationException]).opt(play.core.jscompile.JavascriptCompiler.minify(jsSource, Some(coffeeFile.getName())))
+      val minified = catching(classOf[CompilationException]).opt(play22.core.jscompile.JavascriptCompiler.minify(jsSource, Some(coffeeFile.getName())))
       (jsSource, minified, Seq(coffeeFile))
     },
     coffeescriptOptions

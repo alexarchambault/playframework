@@ -1,13 +1,13 @@
-package play
+package play22
 
 import sbt._
 import PlayExceptions.{ TemplateCompilationException, RoutesCompilationException }
-import play.api.PlayException
+import play22.api.PlayException
 
 trait PlaySourceGenerators {
 
   val RouteFiles = (state: State, sourceDirectories: Seq[File], generatedDir: File, additionalImports: Seq[String], reverseRouter: Boolean, namespaceReverseRouter: Boolean) => {
-    import play.router.RoutesCompiler._
+    import play22.router.RoutesCompiler._
 
     val javaRoutes = (generatedDir ** "routes.java")
     val scalaRoutes = (generatedDir ** "routes_*.scala")
@@ -28,7 +28,7 @@ trait PlaySourceGenerators {
   }
 
   val ScalaTemplates = (state: State, sourceDirectories: Seq[File], generatedDir: File, templateTypes: Map[String, String], additionalImports: Seq[String]) => {
-    import play.templates._
+    import play22.templates._
 
     val templateExt: PartialFunction[File, (File, String, String)] = {
       case p if templateTypes.contains(p.name.split('.').last) =>

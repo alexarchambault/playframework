@@ -1,4 +1,4 @@
-package play
+package play22
 
 import sbt.{ Project => SbtProject, _ }
 import sbt.Keys._
