@@ -22,7 +22,7 @@ object BuildSettings {
 
   val buildOrganization = "com.github.alexarchambault.play22sbt"
   val buildVersion = propOr("play.version", "2.2.6")
-  val buildWithDoc = boolProp("generate.doc")
+  val buildWithDoc = true
   val previousVersion = "2.2.0"
   val buildScalaVersion = propOr("scala.version", "2.10.3")
   // TODO - Try to compute this from SBT... or not.
@@ -42,7 +42,30 @@ object BuildSettings {
     scalaVersion := buildScalaVersion,
     scalaBinaryVersion := CrossVersion.binaryScalaVersion(buildScalaVersion),
     ivyLoggingLevel := UpdateLogging.DownloadOnly,
-    publishTo := Some(publishingMavenRepository),
+    publishMavenStyle := true,
+    publishTo := {
+      Some("releases"  at "https://oss.sonatype.org/" + "service/local/staging/deploy/maven2")
+    },
+    pomExtra :=
+      <url>https://github.com/alexarchambault/playframework</url>
+        <licenses>
+          <license>
+            <name>Apache 2.0</name>
+            <url>http://opensource.org/licenses/Apache-2.0</url>
+          </license>
+        </licenses>
+        <scm>
+          <connection>scm:git:github.com/alexarchambault/playframework.git</connection>
+          <developerConnection>scm:git:git@github.com:alexarchambault/playframework.git</developerConnection>
+          <url>github.com/alexarchambault/playframework.git</url>
+        </scm>
+        <developers>
+          <developer>
+            <id>alexarchambault</id>
+            <name>Alexandre Archambault</name>
+            <url>https://github.com/alexarchambault</url>
+          </developer>
+        </developers>,
     javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-encoding", "UTF-8", "-Xlint:-options"),
     javacOptions in doc := Seq("-source", "1.6"),
     resolvers ++= typesafeResolvers,
@@ -101,31 +124,21 @@ object BuildSettings {
         scalaVersion := buildScalaVersionForSbt,
         scalaBinaryVersion := CrossVersion.binaryScalaVersion(buildScalaVersionForSbt),
         publishTo := Some(publishingMavenRepository),
-        publishArtifact in packageDoc := false,
+        publishArtifact in packageDoc := true,
         publishArtifact in (Compile, packageSrc) := true,
         scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked"))
   }
 }
 
 object Resolvers {
-
-  import BuildSettings._
-
   val typesafeReleases = "Typesafe Releases Repository" at "http://repo.typesafe.com/typesafe/releases/"
-  val typesafeSnapshots = "Typesafe Snapshots Repository" at "http://repo.typesafe.com/typesafe/snapshots/"
+  
   val typesafeIvyReleases = Resolver.url("Typesafe Ivy Releases Repository", url("http://repo.typesafe.com/typesafe/ivy-releases"))(Resolver.ivyStylePatterns)
-  val typesafeIvySnapshots = Resolver.url("Typesafe Ivy Snapshots Repository", url("http://repo.typesafe.com/typesafe/ivy-snapshots"))(Resolver.ivyStylePatterns)
-  val publishTypesafeMavenReleases = "Typesafe Maven Releases Repository for publishing" at "https://private-repo.typesafe.com/typesafe/maven-releases/"
-  val publishTypesafeMavenSnapshots = "Typesafe Maven Snapshots Repository for publishing" at "https://private-repo.typesafe.com/typesafe/maven-snapshots/"
-  val publishTypesafeIvyReleases = Resolver.url("Typesafe Ivy Releases Repository for publishing", url("https://private-repo.typesafe.com/typesafe/ivy-releases/"))(Resolver.ivyStylePatterns)
-  val publishTypesafeIvySnapshots = Resolver.url("Typesafe Ivy Snapshots Repository for publishing", url("https://private-repo.typesafe.com/typesafe/ivy-snapshots/"))(Resolver.ivyStylePatterns)
 
-  val sonatypeSnapshots = "Sonatype snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
-
-  val isSnapshotBuild = buildVersion.endsWith("SNAPSHOT")
-  val typesafeResolvers = if (isSnapshotBuild) Seq(typesafeReleases, typesafeSnapshots) else Seq(typesafeReleases)
-  val publishingMavenRepository = if (isSnapshotBuild) publishTypesafeMavenSnapshots else publishTypesafeMavenReleases
-  val publishingIvyRepository = if (isSnapshotBuild) publishTypesafeIvySnapshots else publishTypesafeIvyReleases
+  val typesafeResolvers = Seq(typesafeReleases)
+  
+  val nexus = "https://oss.sonatype.org/"
+  val publishingMavenRepository = "releases" at nexus + "service/local/staging/deploy/maven2"
 }
 
 
@@ -159,7 +172,7 @@ object PlayBuild extends Build {
   lazy val SbtPluginProject = PlaySbtProject("SBT-Plugin", "sbt-plugin")
     .settings(
       sbtPlugin := true,
-      publishMavenStyle := false,
+      publishMavenStyle := true,
       libraryDependencies := sbtDependencies,
       sbtVersion in GlobalScope := buildSbtVersion,
       sbtBinaryVersion in GlobalScope := buildSbtVersionBinaryCompatible,
@@ -171,7 +184,7 @@ object PlayBuild extends Build {
           d.organization + ":" + d.name + ":" + d.revision
         }.sorted.foreach(println)
       },
-      publishTo := Some(publishingIvyRepository),
+      publishTo := Some(publishingMavenRepository),
       // Must be false, because due to the way SBT integrates with test libraries, and the way SBT uses Java object
       // serialisation to communicate with forked processes, and because this plugin will have SBT 0.13 on the forked
       // processes classpath while it's actually being run by SBT 0.12... if it forks you get serialVersionUID errors.
